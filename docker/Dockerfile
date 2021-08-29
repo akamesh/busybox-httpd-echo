@@ -1,4 +1,5 @@
-FROM docker pull akamesh/busybox-bash
+FROM akamesh/busybox-bash:0.3
 LABEL Maintainers="support@akamesh.com"
 COPY --chown=1000:1000 ./files/ /
+EXPOSE 8080/tcp
 CMD /bin/sh /httpd.sh

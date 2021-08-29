@@ -1,33 +1,71 @@
 #!/bin/bash
 
-CONTAINER="httpd-echo"
+# run as sudo
+
+container_name="httpd-echo"
 echo "Stopping container..."
-sudo docker stop $CONTAINER
+docker stop $container_name
 
 echo "Removing container..."
-sudo docker rm $CONTAINER
+docker rm $container_name
 
 cd docker
+image_id=""
 
-sudo docker build --no-cache .
+# https://www.gnu.org/software/bash/manual/html_node/Bash-Variables.html
+pattern="Successfully built (.*)"
 
-if [ $? -ne 0 ] ; then
-  exit $?
+while read -r line ; do 
+  echo $line
+  if [[ $line =~ $pattern ]] ; then
+    image_id=${BASH_REMATCH[1]}
+  fi
+
+done < <(docker build --no-cache .)
+
+#https://unix.stackexchange.com/questions/14270/get-exit-status-of-process-thats-piped-to-another
+
+if [ -z "$image_id" ] ; then
+  exit 1
 fi
 
 echo ""
 
-read -p "Please enter IMAGE_ID: " IMAGE_ID
+echo "Using image id $image_id"
 
-cmd="docker run -p 8080:8080 -d --label system_code=akamesh --name $CONTAINER $IMAGE_ID"
+cmd="docker run -p 127.0.0.1:8080:8080 -d --label system_code=akamesh --name $container_name $image_id"
 echo $cmd
-CONTAINER_ID=$(sudo $cmd)
-echo "CONTAINER_ID is $CONTAINER_ID"
+container_id=$($cmd)
+echo "container_id is $container_id"
 
-sleep 1
-curl http://localhost:8080/cgi-bin/echo.sh
+sleep 10
 
-sudo docker logs -f $CONTAINER_ID
+cmd="docker ps --filter name=$container_name"
+echo $cmd
+$cmd
 
-#sudo docker exec -it $CONTAINER /bin/bash -l
+cmd="ps -wf -u 1000"
+echo $cmd
+$cmd
+
+echo "###########################################"
+cmd="docker logs --since 1m $container_name"
+echo $cmd
+$cmd
+echo "###########################################"
+
+echo "###########################################"
+cmd="curl --silent --show-error --connect-timeout 1 http://127.0.0.1:8080/"
+echo $cmd
+$cmd
+echo "###########################################"
+
+echo "###########################################"
+cmd="docker logs --since 1m $container_name"
+echo $cmd
+$cmd
+echo "###########################################"
+
+
+#docker exec -it $container_name /bin/bash -l
 
