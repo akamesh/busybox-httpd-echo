@@ -36,9 +36,10 @@ echo "Using image id $image_id"
 cmd="docker run -p 127.0.0.1:8080:8080 -d --label system_code=akamesh --name $container_name $image_id"
 echo $cmd
 container_id=$($cmd)
+
 echo "container_id is $container_id"
 
-sleep 10
+sleep 1
 
 cmd="docker ps --filter name=$container_name"
 echo $cmd
@@ -46,7 +47,7 @@ $cmd
 
 cmd="ps -wf -u 1000"
 echo $cmd
-$cmd
+$cmd | grep httpd
 
 echo "###########################################"
 cmd="docker logs --since 1m $container_name"
@@ -56,6 +57,10 @@ echo "###########################################"
 
 echo "###########################################"
 cmd="curl --silent --show-error --connect-timeout 1 http://127.0.0.1:8080/"
+echo $cmd
+$cmd
+echo "###########################################"
+cmd="curl --silent --show-error --connect-timeout 1 http://127.0.0.1:8080/cgi-bin/echo.sh?hello=goodbye"
 echo $cmd
 $cmd
 echo "###########################################"
