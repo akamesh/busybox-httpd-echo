@@ -20,6 +20,9 @@ jobs:
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+          
       - name: Set up Docker Buildx
         id: buildx
         uses: docker/setup-buildx-action@v1
@@ -31,7 +34,7 @@ jobs:
           password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
 
       # Runs a single command using the runners shell
-      - name: one
+      - name: show repo
         run: |
           pwd
           ls -l
