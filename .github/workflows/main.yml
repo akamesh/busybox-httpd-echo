@@ -32,7 +32,9 @@ jobs:
 
       # Runs a single command using the runners shell
       - name: one
-        run: pwd
+        run: |
+        pwd
+        ls -l
 
 # https://github.com/docker/build-push-action
       - name: Build and push
@@ -40,7 +42,7 @@ jobs:
         uses: docker/build-push-action@v2
         with:
           context: docker
-# omit file when context is a subdir file: ./Dockerfile
+          file: docker/Dockerfile
           push: true
           tags: ${{ secrets.DOCKER_HUB_USERNAME }}/busybox-httpd-echo:latest
 
