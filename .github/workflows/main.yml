@@ -40,7 +40,7 @@ jobs:
         uses: docker/build-push-action@v2
         with:
           context: ./docker
-          file: ./Dockerfile
+# omit file when context is a subdir file: ./Dockerfile
           push: true
           tags: ${{ secrets.DOCKER_HUB_USERNAME }}/busybox-httpd-echo:latest
 
