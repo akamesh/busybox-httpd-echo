@@ -2,7 +2,7 @@
 
 name: CI to Docker Hub
 
-# Controls when the workflow will run
+# git push origin --tags
 on:
   push:
     # no branches
