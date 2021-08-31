@@ -4,9 +4,13 @@ name: CI to Docker Hub
 
 # Controls when the workflow will run
 on:
-  # Triggers the workflow on push or pull request events but only for the main branch
   push:
-    branches: [ main ]
+    # no branches
+    branches:
+      - "!*"
+    # yes tags
+    tags:
+      - "v*"    
 
 # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
@@ -34,8 +38,9 @@ jobs:
           password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
 
       # Runs a single command using the runners shell
-      - name: show repo
+      - name: show environment
         run: |
+          env|sort 
           pwd
           ls -l
 
