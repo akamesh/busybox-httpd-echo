@@ -43,10 +43,10 @@ jobs:
       # push event
       # or  GITHUB_REF=refs/head/main
       # https://stackoverflow.com/questions/63952543/github-actions-build-docker-image-set-name-based-on-branch-name?rq=1
+      # Assumes name of the git repo matches the docker repo
       - name: set DOCKER_TAG and DOCKER_REPO
         run: |
-          GITHUB_REF_BASENAME=$(basename $GITHUB_REF)
-          echo "DOCKER_TAG=$GITHUB_REF_BASENAME" >> $GITHUB_ENV
+          echo "DOCKER_TAG=$(basename $GITHUB_REF)" >> $GITHUB_ENV
           echo "DOCKER_REPO=$(basename $GITHUB_REPOSITORY)" >> $GITHUB_ENV
 
       # Runs a single command using the runners shell
@@ -64,7 +64,7 @@ jobs:
           context: docker
           file: docker/Dockerfile
           push: true
-          tags: ${{ secrets.DOCKER_HUB_USERNAME }}/busybox-httpd-echo:latest,${{ secrets.DOCKER_HUB_USERNAME }}/busybox-httpd-echo:${{ env.DOCKER_TAG }}
+          tags: ${{ secrets.DOCKER_HUB_USERNAME }}/${{ env.DOCKER_REPO }}:latest,${{ secrets.DOCKER_HUB_USERNAME }}/${{ env.DOCKER_REPO }}:${{ env.DOCKER_TAG }}
 
       - name: Image digest
         run: echo ${{ steps.docker_build.outputs.digest }}      
