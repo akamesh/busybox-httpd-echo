@@ -47,7 +47,7 @@ jobs:
         run: |
           GITHUB_REF_BASENAME=$(basename $GITHUB_REF)
           echo "DOCKER_TAG=$GITHUB_REF_BASENAME" >> $GITHUB_ENV
-          echo "DOCKER_REPO=$(basename $GITHUB_REPOSITORY" >> $GITHUB_ENV
+          echo "DOCKER_REPO=$(basename $GITHUB_REPOSITORY)" >> $GITHUB_ENV
           echo "::set-output name=basename::$GITHUB_REF_BASENAME" 
         id: github_ref_basename
 
