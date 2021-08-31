@@ -18,7 +18,7 @@ on:
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
   # This workflow contains a single job called "build"
-  build:
+  dockerhub:
     # The type of runner that the job will run on
     runs-on: ubuntu-latest
 
@@ -37,6 +37,20 @@ jobs:
           username: ${{ secrets.DOCKER_HUB_USERNAME }}
           password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
 
+      # extract last portion of GITHUB_REF
+      # tag event
+      # e.g. GITHUB_REF=refs/tags/v0.2
+      # push event
+      # or  GITHUB_REF=refs/head/main
+      # https://stackoverflow.com/questions/63952543/github-actions-build-docker-image-set-name-based-on-branch-name?rq=1
+      - name: set GITHUB_REF_BASENAME
+        run: |
+          GITHUB_REF_BASENAME=$(basename $GITHUB_REF)
+          echo "DOCKER_TAG=$GITHUB_REF_BASENAME" >> $GITHUB_ENV
+          echo "DOCKER_REPO=$(basename $GITHUB_REPOSITORY" >> $GITHUB_ENV
+          echo "::set-output name=basename::$GITHUB_REF_BASENAME" 
+        id: github_ref_basename
+
       # Runs a single command using the runners shell
       - name: show environment
         run: |
@@ -52,7 +66,7 @@ jobs:
           context: docker
           file: docker/Dockerfile
           push: true
-          tags: ${{ secrets.DOCKER_HUB_USERNAME }}/busybox-httpd-echo:latest
+          tags: ${{ secrets.DOCKER_HUB_USERNAME }}/busybox-httpd-echo:latest,${{ secrets.DOCKER_HUB_USERNAME }}/busybox-httpd-echo:${{ steps.github_ref_basename.outputs.basename }}
 
       - name: Image digest
         run: echo ${{ steps.docker_build.outputs.digest }}      
